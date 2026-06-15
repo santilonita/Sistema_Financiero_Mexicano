@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa Interactivo - Sistema Financiero Mexicano</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col">
+
+    <header class="bg-slate-800 border-b border-slate-700 p-6 shadow-lg sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r content-center from-amber-400 to-emerald-400 tracking-wide">
+                    SISTEMA FINANCIERO MEXICANO
+                </h1>
+                <p class="text-xs text-slate-400 mt-1 uppercase tracking-widest">Lona Luces Santiago . Barrios Reyes Christian Abraham</p>
+            </div>
+            <div class="flex flex-wrap gap-2 justify-center">
+                <button onclick="filterSector('all')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-700 hover:bg-slate-600 transition-all cursor-pointer border border-slate-600">
+                    Todos los Sectores
+                </button>
+                <button onclick="filterSector('reguladores')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-950/40 text-red-400 border border-red-800 hover:bg-red-900/40 cursor-pointer transition-all">Reguladores</button>
+                <button onclick="filterSector('banca')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-950/40 text-blue-400 border border-blue-800 hover:bg-blue-900/40 cursor-pointer transition-all">Banca</button>
+                <button onclick="filterSector('mercados')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-950/40 text-emerald-400 border border-emerald-800 hover:bg-emerald-900/40 cursor-pointer transition-all">Mercados y Retiro</button>
+                <button onclick="filterSector('social')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-purple-950/40 text-purple-400 border border-purple-800 hover:bg-purple-900/40 cursor-pointer transition-all">Popular y Social</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full">
+        <div id="grid-sectores" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-300">
+            
+            <div class="bg-slate-800 rounded-xl p-5 border border-slate-700/80 shadow-md hover:border-red-500/50 transition-all card-sector" data-group="reguladores">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-3 rounded-lg bg-red-500/10 text-red-400 text-xl"><i class="fa-solid fa-gavel"></i></div>
+                    <div>
+                        <h2 class="font-bold text-lg text-white">Autoridades Reguladoras</h2>
+                        <span class="text-xs text-slate-400">Supervisión y Control</span>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-400 mb-4 line-clamp-2">Coordinan, regulan y supervisan el correcto funcionamiento de las entidades financieras del país.</p>
+                <div class="space-y-2">
+                    <button onclick="openModal('shcp')" class="w-full text-left p-2 rounded-lg bg-slate-900/50 hover:bg-slate-700 text-xs flex justify-between items-center group transition-colors cursor-pointer">
+                        <span class="font-medium">SHCP (Secretaría de Hacienda)</span>
+                        <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-red-400 transition-colors"></i>
+                    </button>
+                    <button onclick="openModal('banxico')" class="w-full text-left p-2 rounded-lg bg-slate-900/50 hover:bg-slate-700 text-xs flex justify-between items-center group transition-colors cursor-pointer">
+                        <span class="font-medium">Banxico (Banco de México)</span>
+                        <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-red-400 transition-colors"></i>
+                    </button>
+                    <button onclick="openModal('cnbv')" class="w-full text-left p-2 rounded-lg bg-slate-900/50 hover:bg-slate-700 text-xs flex justify-between items-center group transition-colors cursor-pointer">
+                        <span class="font-medium">CNBV (Comisión Bancaria y Valores)</span>
+                        <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-red-400 transition-colors"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 rounded-xl p-5 border border-slate-700/80 shadow-md hover:border-blue-500/50 transition-all card-sector" data-group="banca">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-3 rounded-lg bg-blue-500/10 text-blue-400 text-xl"><i class="fa-solid fa-building-columns"></i></div>
+                    <div>
+                        <h2 class="font-bold text-lg text-white">Banca Múltiple</h2>
+                        <span class="text-xs text-slate-400">Banca Comercial privada</span>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-400 mb-4 line-clamp-2">Sociedades anónimas facultadas para realizar operaciones de captación de recursos y colocación de créditos.</p>
+                <div class="space-y-2">
+                    <button onclick="openModal('bbva')" class="w-full text-left p-2 rounded-lg bg-slate-900/50 hover:bg-slate-700 text-xs flex justify-between items-center group transition-colors cursor-pointer">
+                        <span class="font-medium">BBVA México</span>
+                        <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-blue-400 transition-colors"></i>
+                    </button>
+                    <button onclick="openModal('banorte')" class="w-full text-left p-2 rounded-lg bg-slate-900/50 hover:bg-slate-700 text-xs flex justify-between items-center group transition-colors cursor-pointer">
+                        <span class="font-medium">Grupo Financiero Banorte</span>
+                        <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-blue-400 transition-colors"></i>
+                    </button>
+                    <button onclick="openModal('santander')" class="w-full text-left p-2 rounded-lg bg-slate-900/50 hover:bg-slate-700 text-xs flex justify-between items-center group transition-colors cursor-pointer">
+                        <span class="font-medium">Santander México</span>
+                        <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-blue-400 transition-colors"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 rounded-xl p-5 border border-slate-700/80 shadow-md hover:border-blue-500/50 transition-all card-sector" data-group="banca">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-3 rounded-lg bg-cyan-500/10 text-cyan-400 text-xl"><i class="fa-solid fa-chart-line"></i></div>
+                    <div>
+                        <h2 class="font-bold text-lg text-white">Banca de Desarrollo</h2>
+                        <span class="text-xs text-slate-400">Entidades de la Administración Pública</span>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-400 mb-4 line-clamp-2">Financian proyectos sectoriales estratégicos, infraestructura y pymes de acuerdo al Plan Nacional de Desarrollo.</p>
+                <div class="space-y-2">
+                    <button onclick="openModal('nafin')" class="w-full text-left p-2 rounded-lg bg-slate-900/50 hover:bg-slate-700 text-xs flex justify-between items-center group transition-colors cursor-pointer">
+                        <span class="font-medium">NAFIN (Nacional Financiera)</span>
+                        <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-cyan-400 transition-colors"></i>
+                    </button>
+                    <button onclick="openModal('banobras')" class="w-full text-left p-2 rounded-lg bg-slate-900/50 hover:bg-slate-700 text-xs flex justify-between items-center group transition-colors cursor-pointer">
+                        <span class="font-medium">Banobras</span>
+                        <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-cyan-400 transition-colors"></i>
+                    </button>
+                    <button onclick="openModal('bancomext')" class="w-full text-left p-2 rounded-lg bg-slate-900/50 hover:bg-slate-700 text-xs flex justify-between items-center group transition-colors cursor-pointer">
+                        <span class="font-medium">Bancomext</span>
+                        <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-cyan-400 transition-colors"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 rounded-xl p-5 border border-slate-700/80 shadow-md hover:border-emerald-500/50 transition-all card-sector" data-group="mercados">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-3 rounded-lg bg-emerald-500/10 text-emerald-400 text-xl"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                    <div>
+                        <h2 class="font-bold text-lg text-white">Sector Bursátil</h2>
+                        <span class="text-xs text-slate-400">Mercado de Valores</span>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-400 mb-4 line-clamp-2">Canaliza los recursos de inversionistas directamente hacia empresas o gobiernos que requieren financiamiento.</p>
+                <div class="space-y-2">
+                    <button onclick="openModal('bmv')" class="w-full text-left p-2 rounded-lg bg-slate-900/50 hover:bg-slate-700 text-xs flex justify-between items-center group transition-colors cursor-pointer">
+                        <span class="font-medium">Bolsa Mexicana de Valores (BMV)</span>
+                        <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-emerald-400 transition-colors"></i>
+                    </button>
+                    <button onclick="openModal('biva')" class="w-full text-left p-2 rounded-lg bg-slate-900/50 hover:bg-slate-700 text-xs flex justify-between items-center group transition-colors cursor-pointer">
+                        <span class="font-medium">BIVA (Bolsa Institucional)</span>
+                        <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-emerald-400 transition-colors"></i>
+                    </button>
+                    <button onclick="openModal('vector')" class="w-full text-left p-2 rounded-lg bg-slate-900/50 hover:bg-slate-700 text-xs flex justify-between items-center group transition-colors cursor-pointer">
+                        <span class="font-medium">Vector Casa de Bolsa</span>
+                        <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-emerald-400 transition-colors"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 rounded-xl p-5 border border-slate-700/80 shadow-md hover:border-red-500/50 transition-all card-sector" data-group="reguladores">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-3 rounded-lg bg-orange-500/10 text-orange-400 text-xl"><i class="fa-solid fa-shield-halved"></i></div>
+                    <div>
+                        <h2 class="font-bold text-lg text-white">Seguros y Fianzas</h2>
+                        <span class="text-xs text-slate-400">Gestión de Riesgos</span>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-400 mb-4 line-clamp-2">Instituciones encargadas de cubrir financieramente los riesgos imprevistos de personas y organizaciones.</p>
+                <div class="space-y-2">
+                    <button onclick="openModal('gnp')" class="w-full text-left p-2 rounded-lg bg-slate-900/50 hover:bg-slate-700 text-xs flex justify-between items-center group transition-colors cursor-pointer">
+                        <span class="font-medium">GNP Seguros</span>
+                        <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-orange-400 transition-colors"></i>
+                    </button>
+                    <button onclick="openModal('axa')" class="w-full text-left p-2 rounded-lg bg-slate-900/50 hover:bg-slate-700 text-xs flex justify-between items-center group transition-colors cursor-pointer">
+                        <span class="font-medium">AXA Seguros</span>
+                        <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-orange-400 transition-colors"></i>
+                    </button>
+                    <button onclick="openModal('qualitas')" class="w-full text-left p-2 rounded-lg bg-slate-900/50 hover:bg-slate-700 text-xs flex justify-between items-center group transition-colors cursor-pointer">
+                        <span class="font-medium">Quálitas</span>
+                        <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-orange-400 transition-colors"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 rounded-xl p-5 border border-slate-700/80 shadow-md hover:border-purple-500/50 transition-all card-sector" data-group="social">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-3 rounded-lg bg-purple-500/10 text-purple-400 text-xl"><i class="fa-solid fa-users"></i></div>
+                    <div>
+                        <h2 class="font-bold text-lg text-white">Ahorro y Crédito Popular</h2>
+                        <span class="text-xs text-slate-400">Inclusión Financiera</span>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-400 mb-4 line-clamp-2">Sociedades cooperativas y financieras orientadas a sectores tradicionalmente desatendidos por la banca comercial.</p>
+                <div class="space-y-2">
+                    <button onclick="openModal('caja_popular')" class="w-full text-left p-2 rounded-lg bg-slate-900/50 hover:bg-slate-700 text-xs flex justify-between items-center group transition-colors cursor-pointer">
+                        <span class="font-medium">Caja Popular Mexicana</span>
+                        <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-purple-400 transition-colors"></i>
+                    </button>
+                    <button onclick="openModal('compartamos')" class="w-full text-left p-2 rounded-lg bg-slate-900/50 hover:bg-slate-700 text-xs flex justify-between items-center group transition-colors cursor-pointer">
+                        <span class="font-medium">Compartamos Banco</span>
+                        <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-purple-400 transition-colors"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 rounded-xl p-5 border border-slate-700/80 shadow-md hover:border-purple-500/50 transition-all card-sector" data-group="social">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-3 rounded-lg bg-pink-500/10 text-pink-400 text-xl"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                    <div>
+                        <h2 class="font-bold text-lg text-white">Auxiliares del Crédito</h2>
+                        <span class="text-xs text-slate-400">Servicios Complementarios</span>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-400 mb-4 line-clamp-2">Entidades como arrendadoras, factorajes o Sofomes que complementan la oferta de financiamiento corporativo.</p>
+                <div class="space-y-2">
+                    <button onclick="openModal('unifin')" class="w-full text-left p-2 rounded-lg bg-slate-900/50 hover:bg-slate-700 text-xs flex justify-between items-center group transition-colors cursor-pointer">
+                        <span class="font-medium">Unifin Financiera</span>
+                        <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-pink-400 transition-colors"></i>
+                    </button>
+                    <button onclick="openModal('creal')" class="w-full text-left p-2 rounded-lg bg-slate-900/50 hover:bg-slate-700 text-xs flex justify-between items-center group transition-colors cursor-pointer">
+                        <span class="font-medium">Crédito Real</span>
+                        <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-pink-400 transition-colors"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 rounded-xl p-5 border border-slate-700/80 shadow-md hover:border-emerald-500/50 transition-all card-sector" data-group="mercados">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-3 rounded-lg bg-teal-500/10 text-teal-400 text-xl"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                    <div>
+                        <h2 class="font-bold text-lg text-white">Sector de Derivados</h2>
+                        <span class="text-xs text-slate-400">Instrumentos Derivados</span>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-400 mb-4 line-clamp-2">Mercado enfocado en la negociación de contratos de futuro y opciones para mitigar la volatilidad financiera.</p>
+                <div class="space-y-2">
+                    <button onclick="openModal('mexder')" class="w-full text-left p-2 rounded-lg bg-slate-900/50 hover:bg-slate-700 text-xs flex justify-between items-center group transition-colors cursor-pointer">
+                        <span class="font-medium">MexDer</span>
+                        <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-teal-400 transition-colors"></i>
+                    </button>
+                    <button onclick="openModal('asigna')" class="w-full text-left p-2 rounded-lg bg-slate-900/50 hover:bg-slate-700 text-xs flex justify-between items-center group transition-colors cursor-pointer">
+                        <span class="font-medium">Asigna</span>
+                        <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-teal-400 transition-colors"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 rounded-xl p-5 border border-slate-700/80 shadow-md hover:border-emerald-500/50 transition-all card-sector" data-group="mercados">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-3 rounded-lg bg-indigo-500/10 text-indigo-400 text-xl"><i class="fa-solid fa-wallet"></i></div>
+                    <div>
+                        <h2 class="font-bold text-lg text-white">AFORES</h2>
+                        <span class="text-xs text-slate-400">Fondos para el Retiro</span>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-400 mb-4 line-clamp-2">Administran las cuentas individuales de ahorro para el retiro de los trabajadores mexicanos bajo el esquema de las SIEFORES.</p>
+                <div class="space-y-2">
+                    <button onclick="openModal('sura')" class="w-full text-left p-2 rounded-lg bg-slate-900/50 hover:bg-slate-700 text-xs flex justify-between items-center group transition-colors cursor-pointer">
+                        <span class="font-medium">Afore SURA</span>
+                        <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-indigo-400 transition-colors"></i>
+                    </button>
+                    <button onclick="openModal('profuturo')" class="w-full text-left p-2 rounded-lg bg-slate-900/50 hover:bg-slate-700 text-xs flex justify-between items-center group transition-colors cursor-pointer">
+                        <span class="font-medium">Afore Profuturo</span>
+                        <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-indigo-400 transition-colors"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 rounded-xl p-5 border border-slate-700/80 shadow-md hover:border-purple-500/50 transition-all card-sector" data-group="social">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="p-3 rounded-lg bg-lime-500/10 text-lime-400 text-xl"><i class="fa-solid fa-house-chimney-user"></i></div>
+                    <div>
+                        <h2 class="font-bold text-lg text-white">Fondos Públicos</h2>
+                        <span class="text-xs text-slate-400">Vivienda y Desarrollo Social</span>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-400 mb-4 line-clamp-2">Fideicomisos del Estado creados para atender necesidades masivas de vivienda, desarrollo y bienestar de los trabajadores.</p>
+                <div class="space-y-2">
+                    <button onclick="openModal('infonavit')" class="w-full text-left p-2 rounded-lg bg-slate-900/50 hover:bg-slate-700 text-xs flex justify-between items-center group transition-colors cursor-pointer">
+                        <span class="font-medium">INFONAVIT</span>
+                        <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-lime-400 transition-colors"></i>
+                    </button>
+                    <button onclick="openModal('fovissste')" class="w-full text-left p-2 rounded-lg bg-slate-900/50 hover:bg-slate-700 text-xs flex justify-between items-center group transition-colors cursor-pointer">
+                        <span class="font-medium">FOVISSSTE</span>
+                        <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-lime-400 transition-colors"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="modal-info" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 p-4 transition-all duration-300">
+        <div class="bg-slate-800 border border-slate-700 w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden transform scale-95 transition-transform duration-300">
+            
+            <div class="p-6 border-b border-slate-700 flex justify-between items-start gap-4">
+                <div class="flex items-center gap-4">
+                    <div id="modal-icon-container" class="p-3 rounded-xl text-2xl"></div>
+                    <div>
+                        <h3 id="modal-title" class="font-bold text-xl text-white"></h3>
+                        <span id="modal-subtitle" class="text-xs text-slate-400 font-semibold tracking-wider uppercase"></span>
+                    </div>
+                </div>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white p-1 rounded-lg bg-slate-700/50 hover:bg-slate-700 transition-colors cursor-pointer">
+                    <i class="fa-solid fa-xmark text-lg px-1"></i>
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto space-y-5 text-sm custom-scrollbar flex-1">
+                <div>
+                    <h4 class="text-xs font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400 uppercase tracking-widest mb-1.5">Descripción General</h4>
+                    <p id="modal-desc" class="text-slate-300 leading-relaxed text-xs md:text-sm"></p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-slate-900/40 p-4 rounded-xl border border-slate-700/40">
+                        <h4 class="text-xs font-bold text-blue-400 uppercase tracking-widest mb-2"><i class="fa-solid fa-list-check mr-1.5"></i> Funciones Clave</h4>
+                        <ul id="modal-functions" class="list-disc pl-4 space-y-1 text-xs text-slate-300"></ul>
+                    </div>
+                    <div class="bg-slate-900/40 p-4 rounded-xl border border-slate-700/40">
+                        <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-2"><i class="fa-solid fa-bolt mr-1.5"></i> Actividades (2020-2025)</h4>
+                        <ul id="modal-activities" class="list-disc pl-4 space-y-1 text-xs text-slate-300"></ul>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <h4 class="text-xs font-bold text-purple-400 uppercase tracking-widest mb-1.5"><i class="fa-solid fa-scale-balanced mr-1.5"></i> Marco Legal</h4>
+                        <p id="modal-legal" class="text-xs text-slate-400 italic"></p>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-pink-400 uppercase tracking-widest mb-1.5"><i class="fa-solid fa-chart-pie mr-1.5"></i> Impacto Económico</h4>
+                        <p id="modal-impact" class="text-xs text-slate-300"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 bg-slate-900/60 border-t border-slate-700 flex justify-end">
+                <a id="modal-link" href="#" target="_blank" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-xs font-semibold rounded-lg inline-flex items-center gap-1.5 transition-colors">
+                    <span>Sitio Web Oficial</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-slate-950 border-t border-slate-800 p-4 text-center mt-auto">
+        <div class="max-w-4xl mx-auto flex flex-wrap justify-center items-center gap-6 text-xs text-slate-500">
+            <div class="flex items-center gap-2">
+                <span class="w-3 h-0.5 bg-red-500 inline-block"></span>
+                <span>Relación Jerárquica / Normativa</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="w-3 h-0.5 bg-blue-500 inline-block"></span>
+                <span>Flujo de Liquidez / Operaciones</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="w-3 h-0.5 bg-purple-500 inline-block"></span>
+                <span>Captación y Captación Popular</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const institutionData = {
+            shcp: {
+                title: "SHCP",
+                subtitle: "Secretaría de Hacienda y Crédito Público",
+                icon: "fa-gavel",
+                bgIcon: "bg-red-500/10 text-red-400",
+                desc: "Máxima autoridad administrativa del Poder Ejecutivo Federal encargada de planear, coordinar y evaluar el sistema bancario y financiero nacional.",
+                functions: [
+                    "Proponer y dirigir la política económica del Gobierno Federal.",
+                    "Autorizar la operación de intermediarios financieros de gran escala.",
+                    "Supervisar los presupuestos de egresos e ingresos de la federación."
+                ],
+                activities: [
+                    "Coordinación de los paquetes económicos frente a la resiliencia post-pandemia.",
+                    "Digitalización y endurecimiento de reglas anti-lavado de dinero (PLD) 2023.",
+                    "Modernización de normativas fiscales para plataformas tecnológicas."
+                ],
+                legal: "Ley Orgánica de la Administración Pública Federal, Ley de Ingresos.",
+                impact: "Dicta el rumbo macroeconómico y fiscal, garantizando la solvencia y fondeo global del Estado.",
+                link: "https://www.gob.mx/shcp"
+            },
+            banxico: {
+                title: "Banco de México",
+                subtitle: "Banco Central Autónomo",
+                icon: "fa-building-columns",
+                bgIcon: "bg-red-500/10 text-red-400",
+                desc: "El banco central del Estado mexicano, autónomo en sus funciones y administración, cuyo mandato prioritario es mantener la estabilidad del poder adquisitivo de la moneda nacional.",
+                functions: [
+                    "Proveer de moneda nacional (emisión de billetes y acuñación).",
+                    "Controlar la inflación mediante la política monetaria (tasa de referencia).",
+                    "Regular el sano desarrollo de los sistemas de pagos (SPEI)."
+                ],
+                activities: [
+                    "Ciclo histórico de alzas de tasas de interés hasta el 11.25% (2023-2024) para frenar la inflación mundial.",
+                    "Lanzamiento e impulso de la plataforma de pagos digitales DiMo (Dinero Móvil) en 2023.",
+                    "Gestión y acumulación récord de reservas internacionales en el periodo 2024-2025."
+                ],
+                legal: "Artículo 28 Constitucional, Ley del Banco de México.",
+                impact: "Garante número uno de la estabilidad macroeconómica y el valor del peso frente a choques externos.",
+                link: "https://www.banxico.org.mx"
+            },
+            cnbv: {
+                title: "CNBV",
+                subtitle: "Comisión Nacional Bancaria y de Valores",
+                icon: "fa-shield-halved",
+                bgIcon: "bg-red-500/10 text-red-400",
+                desc: "Órgano desconcentrado de la SHCP con autonomía técnica y facultades ejecutivas encargado de supervisar y regular a las entidades integrantes del sistema financiero.",
+                functions: [
+                    "Autorizar y regular el funcionamiento de bancos, casas de bolsa y Sofipos.",
+                    "Dictar normas de contabilidad y capitalización de riesgos.",
+                    "Sancionar e intervenir entidades que incumplan el marco operativo normativo."
+                ],
+                activities: [
+                    "Certificación masiva y supervisión técnica de las Instituciones de Tecnología Financiera (Ley Fintech) entre 2021 y 2024.",
+                    "Supervisión del proceso de separación institucional de Citibanamex (2024-2025).",
+                    "Monitoreo de capitalización de la banca múltiple ante el auge de créditos al consumo."
+                ],
+                legal: "Ley de la Comisión Nacional Bancaria y de Valores, Ley de Instituciones de Crédito.",
+                impact: "Mantiene la confianza pública en el sistema asegurando la liquidez y solvencia operativa del sector.",
+                link: "https://www.cnbv.gob.mx"
+            },
+            bbva: {
+                title: "BBVA México",
+                subtitle: "Banca Múltiple / Privada",
+                icon: "fa-money-bill-transfer",
+                bgIcon: "bg-blue-500/10 text-blue-400",
+                desc: "La institución bancaria privada más grande del mercado mexicano por activos, cartera de crédito y depósitos totales.",
+                functions: [
+                    "Captación de ahorro del público general en cuentas corrientes y de inversión.",
+                    "Otorgamiento de créditos comerciales, hipotecarios y de consumo masivo.",
+                    "Intermediación de servicios financieros digitales avanzados."
+                ],
+                activities: [
+                    "Migración digital masiva superando los 22 millones de usuarios móviles activos para 2024.",
+                    "Colocación de bonos sostenibles e inversión verde con criterios ESG a gran escala (2022-2025).",
+                    "Financiamiento estratégico a cadenas de suministro globales atraídas por el Nearshoring."
+                ],
+                legal: "Ley de Instituciones de Crédito.",
+                impact: "Principal motor de financiamiento al consumo privado y corporativo dentro de la actividad comercial del país.",
+                link: "https://www.bbva.mx"
+            },
+            banorte: {
+                title: "Grupo Financiero Banorte",
+                subtitle: "Banca Múltiple / Capital Mexicano",
+                icon: "fa-building",
+                bgIcon: "bg-blue-500/10 text-blue-400",
+                desc: "Conocido como 'El Banco Fuerte de México', destaca por ser la mayor institución financiera controlada por inversionistas mexicanos.",
+                functions: [
+                    "Administración de banca comercial, seguros, pensiones y fondos de inversión.",
+                    "Financiamiento a gobiernos estatales, municipales e infraestructura crítica."
+                ],
+                activities: [
+                    "Lanzamiento operativo y masivo de 'bineo', su banco 100% digital nativo autorizado por CNBV (2024).",
+                    "Alianzas comerciales estratégicas para remesas transfronterizas seguras de EUA a México.",
+                    "Resultados financieros netos históricos impulsados por captación corporativa."
+                ],
+                legal: "Ley de Instituciones de Crédito, Ley para Regular las Agrupaciones Financieras.",
+                impact: "Líder en financiamiento a infraestructura pública y el principal intermediario de capital netamente nacional.",
+                link: "https://www.banorte.com"
+            },
+            santander: {
+                title: "Santander México",
+                subtitle: "Banca Múltiple / Global",
+                icon: "fa-landmark",
+                bgIcon: "bg-blue-500/10 text-blue-400",
+                desc: "Subsidiaria del consorcio global español, con un enfoque agresivo en el desarrollo de PyMEs y servicios premium.",
+                functions: [
+                    "Intermediación crediticia comercial y corporativa.",
+                    "Estructuración de inversiones institucionales e individuales."
+                ],
+                activities: [
+                    "Inversión de capital para el despliegue de su plataforma digital 'Openbank' (2024-2025).",
+                    "Lanzamiento de programas de crédito especializados para el empoderamiento de PyMEs exportadoras.",
+                    "Consolidación de su desliste bursátil para el control total del grupo matriz (2023)."
+                ],
+                legal: "Ley de Instituciones de Crédito.",
+                impact: "Pilar de conexión entre el capital transnacional de inversión y el tejido corporativo mediano en México.",
+                link: "https://www.santander.com.mx"
+            },
+            nafin: {
+                title: "Nacional Financiera (NAFIN)",
+                subtitle: "Banca de Desarrollo",
+                icon: "fa-chart-pie",
+                bgIcon: "bg-cyan-500/10 text-cyan-400",
+                desc: "Institución de banca de desarrollo propiedad del Estado enfocada en promover el crecimiento del sector industrial y de PyMEs.",
+                functions: [
+                    "Facilitar el acceso de las PyMEs a servicios de financiamiento y capacitación.",
+                    "Impulsar proyectos de inversión tecnológica y sustentabilidad industrial.",
+                    "Operar como agente financiero del Gobierno Federal en mercados internacionales."
+                ],
+                activities: [
+                    "Despliegue de programas de garantías emergentes sectoriales para la reactivación industrial.",
+                    "Emisión de bonos sustentables en mercados globales para financiar proyectos de energía limpia (2023).",
+                    "Fondeo masivo estructurado para el desarrollo de parques industriales del istmo."
+                ],
+                legal: "Ley Orgánica de Nacional Financiera.",
+                impact: "Mitiga las fallas de mercado absorbiendo riesgos de crédito para PyMEs que la banca comercial tradicional no asume.",
+                link: "https://www.nafin.com"
+            },
+            banobras: {
+                title: "Banobras",
+                subtitle: "Banca de Desarrollo / Infraestructura",
+                icon: "fa-road",
+                bgIcon: "bg-cyan-500/10 text-cyan-400",
+                desc: "Banco Nacional de Obras y Servicios Públicos, encargado de financiar proyectos de infraestructura federal, estatal y municipal.",
+                functions: [
+                    "Financiar obras públicas de transporte, agua, energía y conectividad.",
+                    "Prestar asistencia técnica y financiera a municipios para la gestión de su deuda."
+                ],
+                activities: [
+                    "Fondeo e intermediación directa de los grandes proyectos federales de infraestructura (2020-2024).",
+                    "Refinanciamiento integral de deudas públicas estatales a tasas altamente competitivas.",
+                    "Lanzamiento de bonos de género y sustentabilidad en la bolsa mexicana."
+                ],
+                legal: "Ley Orgánica de Banobras.",
+                impact: "Es la herramienta gubernamental clave para acelerar la urbanización y modernización física del país.",
+                link: "https://www.gob.mx/banobras"
+            },
+            bancomext: {
+                title: "Bancomext",
+                subtitle: "Banca de Desarrollo / Comercio Exterior",
+                icon: "fa-globe",
+                bgIcon: "bg-cyan-500/10 text-cyan-400",
+                desc: "Banco Nacional de Comercio Exterior, dedicado a financiar las exportaciones mexicanas y su integración en cadenas globales.",
+                functions: [
+                    "Otorgar financiamiento especializado y garantías a empresas exportadoras e importadoras.",
+                    "Atraer inversión extranjera directa mediante esquemas de coinversión corporativa."
+                ],
+                activities: [
+                    "Estructuración de líneas de crédito multianuales para la relocalización de empresas (Nearshoring 2023-2025).",
+                    "Apoyo financiero al sector exportador automotriz y aeroespacial mexicano.",
+                    "Programas de cobertura cambiaria y factoraje internacional ante choques comerciales globales."
+                ],
+                legal: "Ley Orgánica del Banco Nacional de Comercio Exterior.",
+                impact: "Garantiza la liquidez de las divisas y el dinamismo competitivo de México en el comercio internacional.",
+                link: "https://www.bancomext.com"
+            },
+            bmv: {
+                title: "Bolsa Mexicana de Valores",
+                subtitle: "Sector Bursátil / Mercado Central",
+                icon: "fa-arrow-trend-up",
+                bgIcon: "bg-emerald-500/10 text-emerald-400",
+                desc: "Empresa concesionaria que opera el mercado organizado de valores en México, facilitando la transacción de acciones, bonos y títulos financieros.",
+                functions: [
+                    "Proporcionar la infraestructura física y tecnológica para el mercado de valores.",
+                    "Establecer reglas de listado y vigilar la transparencia de las empresas públicas.",
+                    "Fomentar la democratización del acceso al capital corporativo de gran nivel."
+                ],
+                activities: [
+                    "Lanzamiento de nuevos índices basados en criterios ASG (Ambiental, Social y Gobernanza) entre 2022 y 2024.",
+                    "Modernización de su plataforma para soportar el auge transaccional proveniente de micro-inversionistas digitales.",
+                    "Esfuerzos conjuntos sectoriales para flexibilizar los requisitos de listado de medianas empresas (2024)."
+                ],
+                legal: "Ley del Mercado de Valores.",
+                impact: "Barómetro de la riqueza financiera nacional que provee financiamiento alterno de largo plazo a las mayores corporaciones.",
+                link: "https://www.bmv.com.mx"
+            },
+            biva: {
+                title: "BIVA",
+                subtitle: "Sector Bursátil / Bolsa Competidora",
+                icon: "fa-bolt-lightning",
+                bgIcon: "bg-emerald-500/10 text-emerald-400",
+                desc: "Bolsa Institucional de Valores, la segunda bolsa de valores autorizada en México para romper el monopolio histórico y dinamizar el mercado.",
+                functions: [
+                    "Aumentar la liquidez e inclusión del mercado bursátil mexicano mediante tecnología de punta.",
+                    "Atraer nuevas empresas medianas al mercado mediante procesos simplificados."
+                ],
+                activities: [
+                    "Atracción de listados masivos de deuda orientados a bonos verdes y sustentables.",
+                    "Alianzas globales y foros internacionales en Nueva York para promover el ecosistema corporativo mexicano (2023-2025).",
+                    "Implementación de herramientas de ejecución de operaciones de ultra baja latencia."
+                ],
+                legal: "Ley del Mercado de Valores.",
+                impact: "Inyecta competencia tecnológica y tarifaria, reduciendo costos de financiamiento para emisores.",
+                link: "https://www.biva.mx"
+            },
+            vector: {
+                title: "Vector Casa de Bolsa",
+                subtitle: "Sector Bursátil / Intermediario",
+                icon: "fa-chart-bar",
+                bgIcon: "bg-emerald-500/10 text-emerald-400",
+                desc: "Institución financiera mexicana independiente líder en intermediación bursátil y manejo de portafolios patrimoniales.",
+                functions: [
+                    "Intermediar la compraventa de acciones, divisas y derivados para particulares e institucionales.",
+                    "Ofrecer asesoría especializada en portafolios de inversión privada masiva."
+                ],
+                activities: [
+                    "Expansión operativa global en mercados de Latinoamérica y Europa.",
+                    "Lanzamiento de fondos de inversión basados en analítica de datos e inteligencia artificial (2024).",
+                    "Premios internacionales a la mejor casa de bolsa en gestión patrimonial en México."
+                ],
+                legal: "Ley del Mercado de Valores.",
+                impact: "Canaliza eficientemente el ahorro privado hacia activos productivos listados en los mercados financieros oficiales.",
+                link: "https://www.vector.com.mx"
+            },
+            gnp: {
+                title: "GNP Seguros",
+                subtitle: "Sector de Seguros / Multilínea",
+                icon: "fa-umbrella",
+                bgIcon: "bg-orange-500/10 text-orange-400",
+                desc: "Grupo Nacional Provincial es la empresa aseguradora multilínea 100% mexicana con mayor historia y participación en el mercado local.",
+                functions: [
+                    "Ofrecer pólizas de vida, gastos médicos, autos y daños corporativos.",
+                    "Administrar e invertir las reservas técnicas acumuladas en instrumentos de renta fija gubernamental."
+                ],
+                activities: [
+                    "Pago de siniestros históricos derivados de contingencias de salud y el huracán Otis en Acapulco (2023-2024).",
+                    "Digitalización total de procesos de reclamación y ajuste vía aplicaciones móviles.",
+                    "Lanzamiento de seguros especializados con enfoque inclusivo de género."
+                ],
+                legal: "Ley de Instituciones de Seguros y de Fianzas.",
+                impact: "Protege el patrimonio de familias y empresas contra catástrofes, absorbiendo pérdidas severas en la economía real.",
+                link: "https://www.gnp.com.mx"
+            },
+            axa: {
+                title: "AXA Seguros",
+                subtitle: "Sector de Seguros / Global",
+                icon: "fa-shield",
+                bgIcon: "bg-orange-500/10 text-orange-400",
+                desc: "Filial mexicana del gigante de seguros de origen francés, con un fuerte liderazgo en el ramo de gastos médicos y salud integral.",
+                functions: [
+                    "Proveer soluciones globales de prevención y transferencia de riesgos.",
+                    "Inversión de reservas en el mercado local conforme a las reglas de solvencia."
+                ],
+                activities: [
+                    "Apertura masiva de su red de clínicas propias 'Keralty' para integrar servicios médicos y seguros (2022-2024).",
+                    "Implementación de modelos avanzados basados en telemática para la cotización personalizada de seguros de auto.",
+                    "Estrategia de coberturas paramétricas contra riesgos climáticos extremos para sectores agropecuarios."
+                ],
+                legal: "Ley de Instituciones de Seguros y de Fianzas.",
+                impact: "Aporta solidez financiera de nivel global ante desastres de gran magnitud en el territorio nacional.",
+                link: "https://axa.mx"
+            },
+            qualitas: {
+                title: "Quálitas",
+                subtitle: "Sector de Seguros / Automotriz",
+                icon: "fa-car",
+                bgIcon: "bg-orange-500/10 text-orange-400",
+                desc: "Empresa especialista líder absoluta en el seguro automotriz en México, con una red masiva de cobertura nacional.",
+                functions: [
+                    "Aseguramiento especializado de vehículos particulares, comerciales, de carga y flotillas.",
+                    "Gestión de redes de auxilio vial y reparación mecánica eficiente."
+                ],
+                activities: [
+                    "Gestión y contención de costos operativos ante el repunte de robos de transporte de carga pesada en carreteras (2023-2024).",
+                    "Uso de inteligencia artificial para la valuación inmediata de daños por siniestros vehiculares menores.",
+                    "Expansión exitosa de operaciones en mercados de Centroamérica y Estados Unidos."
+                ],
+                legal: "Ley de Instituciones de Seguros y de Fianzas.",
+                impact: "Indispensable para la continuidad operativa y logística del transporte terrestre y la movilidad de mercancías en el país.",
+                link: "https://www.qualitas.com.mx"
+            },
+            caja_popular: {
+                title: "Caja Popular Mexicana",
+                subtitle: "Ahorro y Crédito Popular / SOCAP",
+                icon: "fa-users-gears",
+                bgIcon: "bg-purple-500/10 text-purple-400",
+                desc: "La Sociedad Cooperativa de Ahorro y Préstamo (SOCAP) más grande del país, controlada democráticamente por sus socios.",
+                functions: [
+                    "Fomentar el ahorro popular en zonas rurales y semiurbanas desatendidas.",
+                    "Otorgar microcréditos con tasas de interés accesibles a fines productivos o familiares."
+                ],
+                activities: [
+                    "Inversión masiva en la renovación tecnológica de sus plataformas e infraestructura de cajeros automáticos (2023-2024).",
+                    "Expansión de su membresía superando los 3.4 millones de socios cooperativistas en el país.",
+                    "Programas extensivos de educación financiera para comunidades vulnerables."
+                ],
+                legal: "Ley de Ahorro y Crédito Popular, Ley General de Sociedades Cooperativas.",
+                impact: "Herramienta principal de inclusión y democratización financiera en los municipios apartados de la banca comercial.",
+                link: "https://www.cpm.coop"
+            },
+            compartamos: {
+                title: "Compartamos Banco",
+                subtitle: "Banca Popular / Microfinanzas",
+                icon: "fa-people-group",
+                bgIcon: "bg-purple-500/10 text-purple-400",
+                desc: "Institución bancaria líder de las microfinanzas en América Latina, enfocada en otorgar créditos grupales productivos.",
+                functions: [
+                    "Proveer microcréditos a emprendedores de sectores populares (principalmente mujeres bajo esquemas grupales).",
+                    "Ofrecer microseguros de vida y servicios de ahorro simplificados."
+                ],
+                activities: [
+                    "Digitalización de los canales de desembolso y cobro a través de alianzas con corresponsales financieros locales.",
+                    "Logro de métricas de colocación de crédito históricas post-pandemia impulsando el autoempleo formal e informal (2023).",
+                    "Emisión de bonos sociales en los mercados bursátiles locales."
+                ],
+                legal: "Ley de Instituciones de Crédito (operado bajo licencia bancaria con enfoque social).",
+                impact: "Reactiva la microeconomía de barrio y empodera financieramente a millones de mujeres emprendedoras independientes.",
+                link: "https://www.compartamos.com.mx"
+            },
+            unifin: {
+                title: "Unifin Financiera",
+                subtitle: "Auxiliar del Crédito / Arrendamiento",
+                icon: "fa-file-invoice-dollar",
+                bgIcon: "bg-pink-500/10 text-pink-400",
+                desc: "Sociedad Financiera de Objeto Múltiple (Sofom ER) que llegó a consolidarse como la arrendadora independiente más grande de México.",
+                functions: [
+                    "Arrendamiento puro de equipo industrial, maquinaria, transporte y flotillas corporativas.",
+                    "Factoraje financiero y otorgamiento de crédito empresarial de corto plazo."
+                ],
+                activities: [
+                    "Proceso de reestructura financiera integral y concurso mercantil iniciado a partir de crisis de liquidez (2022-2024).",
+                    "Estrategia de renegociación de pasivos con tenedores institucionales de bonos bursátiles.",
+                    "Optimización de operaciones enfocada en conservar carteras de clientes PyME esenciales."
+                ],
+                legal: "Ley General de Organizaciones y Actividades Auxiliares del Crédito.",
+                impact: "Su evolución financiera ha reconfigurado los requerimientos de fondeo y las reglas de auditoría para todo el sector Sofom.",
+                link: "https://www.unifin.com.mx"
+            },
+            creal: {
+                title: "Crédito Real",
+                subtitle: "Auxiliar del Crédito / Crédito de Nómina",
+                icon: "fa-id-card-clip",
+                bgIcon: "bg-pink-500/10 text-pink-400",
+                desc: "Sofom especializada históricamente en otorgar créditos de consumo y de nómina a trabajadores del sector público y pensionados.",
+                functions: [
+                    "Colocación de financiamientos con descuento directo vía nómina.",
+                    "Diversificación hacia créditos automotrices y microcréditos regionales."
+                ],
+                activities: [
+                    "Liquidación corporativa formal y procesos legales tras el default financiero en mercados internacionales (2022-2023).",
+                    "Venta estratégica de carteras de crédito vigentes a otros intermediarios del sector.",
+                    "Jurisprudencia corporativa de relevancia nacional sobre la liquidación de intermediarios no bancarios."
+                ],
+                legal: "Ley General de Organizaciones y Actividades Auxiliares del Crédito.",
+                impact: "Marcó un precedente regulatorio estricto sobre el apalancamiento exterior de intermediarios no bancarios.",
+                link: "#"
+            },
+            mexder: {
+                title: "MexDer",
+                subtitle: "Sector de Derivados / Bolsa de Derivados",
+                icon: "fa-arrow-right-arrow-left",
+                bgIcon: "bg-teal-500/10 text-teal-400",
+                desc: "Mercado Mexicano de Derivados, la bolsa oficial donde se listan y negocian contratos de futuros, opciones y swaps.",
+                functions: [
+                    "Proveer la plataforma transparente para fijar coberturas de precios de divisas, tasas y acciones.",
+                    "Mitigar los riesgos financieros asociados a la volatilidad extrema de los mercados económicos."
+                ],
+                activities: [
+                    "Crecimiento en el volumen de negociación de contratos de futuros sobre el dólar frente a la volatilidad electoral.",
+                    "Lanzamiento de contratos de derivados referenciados a la TIIE de Fondeo a un día (2023-2024).",
+                    "Programas interactivos avanzados de capacitación técnica y promoción de coberturas corporativas."
+                ],
+                legal: "Reglas para Participantes del Mercado de Futuros y Opciones (SHCP, Banxico, CNBV).",
+                impact: "Permite a corporativos y bancos congelar variables de costo financiero, estabilizando la planificación comercial.",
+                link: "https://www.mexder.com.mx"
+            },
+            asigna: {
+                title: "Asigna",
+                subtitle: "Sector de Derivados / Cámara de Compensación",
+                icon: "fa-scale-unbalanced",
+                bgIcon: "bg-teal-500/10 text-teal-400",
+                desc: "Fideicomiso de administración y pago que funge como la contraparte central de todas las transacciones realizadas en MexDer.",
+                functions: [
+                    "Garantizar el cumplimiento financiero de los contratos de futuros y opciones celebrados.",
+                    "Administrar las aportaciones iniciales mínimas (márgenes de riesgo) de los operadores financieros."
+                ],
+                activities: [
+                    "Actualización de algoritmos de gestión de riesgo en tiempo real ante escenarios macroeconómicos complejos (2023).",
+                    "Mantenimiento de la calificación crediticia AAA debido a su solidez estructural y nulo historial de default.",
+                    "Automatización de llamadas de margen diarias para socios liquidadores institucionales."
+                ],
+                legal: "Reglas de Operación del Mercado de Derivados, Circulares de Banco de México.",
+                impact: "Elimina el riesgo de contraparte, evitando que el incumplimiento de un operador contagie al sistema financiero.",
+                link: "https://www.asigna.com.mx"
+            },
+            sura: {
+                title: "Afore SURA",
+                subtitle: "Sector de Retiro / AFORE",
+                icon: "fa-briefcase animate-none",
+                bgIcon: "bg-indigo-500/10 text-indigo-400",
+                desc: "Administradora de Fondos para el Retiro de origen colombiano, una de las principales gestoras de activos pensionarios en México.",
+                functions: [
+                    "Administrar los recursos de las cuentas individuales de retiro de los trabajadores.",
+                    "Invertir el capital en las SIEFORES para maximizar los rendimientos a largo plazo bajo límites de riesgo."
+                ],
+                activities: [
+                    "Implementación de los cambios operativos de la reforma de pensiones, absorbiendo el incremento gradual de aportaciones patronales.",
+                    "Inversión diversificada en proyectos de infraestructura sostenible y bonos corporativos (2022-2025).",
+                    "Desarrollo de módulos digitales para el ahorro voluntario simplificado desde el celular."
+                ],
+                legal: "Ley de los Sistemas de Ahorro para el Retiro.",
+                impact: "Transforma el ahorro obligatorio en capital de inversión productiva de largo plazo para el crecimiento del país.",
+                link: "https://www.aforesura.com.mx"
+            },
+            profuturo: {
+                title: "Afore Profuturo",
+                subtitle: "Sector de Retiro / AFORE",
+                icon: "fa-vault",
+                bgIcon: "bg-indigo-500/10 text-indigo-400",
+                desc: "Afore mexicana perteneciente a Grupo Bal, reconocida constantemente por liderar las tablas de rendimiento neto de CONSAR.",
+                functions: [
+                    "Custodiar e invertir con alta especialización técnica el ahorro pensionario de millones de afiliados."
+                ],
+                activities: [
+                    "Primer lugar continuo en rendimiento neto en la mayoría de las SIEFORES Generacionales (2020-2024).",
+                    "Uso de modelos predictivos avanzados para mitigar las minusvalías temporales por volatilidad de mercados.",
+                    "Estrategia agresiva de atracción y retención de cuentas individuales de alto saldo."
+                ],
+                legal: "Ley de los Sistemas de Ahorro para el Retiro.",
+                impact: "Asegura el poder adquisitivo futuro de los pensionados y es un jugador institucional masivo en el mercado de deuda nacional.",
+                link: "https://www.profuturo.mx"
+            },
+            infonavit: {
+                title: "INFONAVIT",
+                subtitle: "Fideicomiso Público / Vivienda Social",
+                icon: "fa-house-lock",
+                bgIcon: "bg-lime-500/10 text-lime-400",
+                desc: "El Instituto del Fondo Nacional de la Vivienda para los Trabajadores es un organismo público tripartito masivo del Estado.",
+                functions: [
+                    "Administrar los recursos del Fondo Nacional de la Vivienda, conformado por el 5% de las aportaciones patronales.",
+                    "Otorgar créditos accesibles para la adquisición, construcción o remodelación de vivienda obrera."
+                ],
+                activities: [
+                    "Conversión masiva e histórica de millones de créditos tasados en Veces Salario Mínimo (VSM) a Pesos para evitar deudas impagables (2022-2024).",
+                    "Lanzamiento de programas innovadores como 'Unamos Créditos' y esquemas de refinanciamiento flexible.",
+                    "Flexibilización de reglas para la compra de terrenos y autoconstrucción supervisada."
+                ],
+                legal: "Artículo 123 Constitucional, Ley del INFONAVIT.",
+                impact: "El mayor originador de crédito hipotecario del país, dinamizador central de la industria de la construcción y el bienestar social.",
+                link: "https://portalmx.infonavit.org.mx"
+            },
+            fovissste: {
+                title: "FOVISSSTE",
+                subtitle: "Fideicomiso Público / Vivienda del Estado",
+                icon: "fa-person-shelter",
+                bgIcon: "bg-lime-500/10 text-lime-400",
+                desc: "Fondo de la Vivienda del Instituto de Seguridad y Servicios Sociales de los Trabajadores del Estado, enfocado en servidores públicos.",
+                functions: [
+                    "Operar el sistema de financiamiento para otorgar créditos hipotecarios a los trabajadores al servicio del Estado."
+                ],
+                activities: [
+                    "Implementación de esquemas de inscripción continua de créditos, eliminando los tradicionales sorteos anuales restrictivos (2023).",
+                    "Programas integrales de restructuración de créditos rezagados para mitigar impactos inflacionarios en los salarios públicos.",
+                    "Convenios institucionales con la banca comercial para el co-financiamiento hipotecario potenciado."
+                ],
+                legal: "Ley del ISSSTE.",
+                impact: "Garantiza el acceso a la vivienda digna para el cuerpo operativo, educativo y médico del sector público nacional.",
+                link: "https://www.gob.mx/fovissste"
+            }
+        };
+
+        // Lógica de Filtros (Nivel 2)
+        function filterSector(group) {
+            const cards = document.querySelectorAll('.card-sector');
+            cards.forEach(card => {
+                if (group === 'all' || card.getAttribute('data-group') === group) {
+                    card.style.display = 'block';
+                    card.style.opacity = '1';
+                } else {
+                    card.style.display = 'none';
+                    card.style.opacity = '0';
+                }
+            });
+        }
+
+        // Lógica de Modales (Nivel 3 - Ventanas Emergentes)
+        function openModal(id) {
+            const data = institutionData[id];
+            if (!data) return;
+
+            // Inyectar Datos
+            document.getElementById('modal-title').innerText = data.title;
+            document.getElementById('modal-subtitle').innerText = data.subtitle;
+            document.getElementById('modal-desc').innerText = data.desc;
+            document.getElementById('modal-legal').innerText = data.legal;
+            document.getElementById('modal-impact').innerText = data.impact;
+            document.getElementById('modal-link').href = data.link;
+
+            // Icono Dinámico
+            const iconContainer = document.getElementById('modal-icon-container');
+            iconContainer.className = `p-3 rounded-xl text-2xl ${data.bgIcon}`;
+            iconContainer.innerHTML = `<i class="fa-solid ${data.icon}"></i>`;
+
+            // Listas
+            const funcList = document.getElementById('modal-functions');
+            funcList.innerHTML = data.functions.map(f => `<li>${f}</li>`).join('');
+
+            const actList = document.getElementById('modal-activities');
+            actList.innerHTML = data.activities.map(a => `<li>${a}</li>`).join('');
+
+            // Animación Mostrar
+            const modal = document.getElementById('modal-info');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.firstElementChild.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal-info');
+            modal.classList.add('opacity-0');
+            modal.firstElementChild.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Cerrar modal al hacer click fuera del contenedor principal
+        document.getElementById('modal-info').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+    </script>
+</body>
+</html>
