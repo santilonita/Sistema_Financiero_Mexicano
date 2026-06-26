@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador Microeconómico - Producción Avícola</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #16a085;
+            --accent: #e74c3c;
+            --bg: #f8f9fa;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            text-align: center;
+            font-style: italic;
+            color: #7f8c8d;
+            margin-top: 5px;
+            margin-bottom: 15px;
+        }
+        .team-box {
+            background: #f1f2f6;
+            border: 1px solid #dcdde1;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 15px auto 25px auto;
+            max-width: 600px;
+        }
+        .team-box p {
+            margin: 5px 0;
+            font-size: 15px;
+        }
+        .team-title {
+            font-weight: bold;
+            color: var(--primary);
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 1px;
+        }
+        .grid-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+        .form-group input {
+            padding: 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            grid-column: 1 / -1;
+            background: var(--secondary);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #117a65;
+        }
+        .results-box {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 30px;
+            border-radius: 4px;
+        }
+        .table-responsive {
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: var(--primary);
+            color: white;
+        }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        .highlight-optimo { background-color: #d4edda !important; font-weight: bold; }
+        .highlight-cierre { background-color: #f8d7da !important; font-weight: bold; }
+        .chart-container {
+            position: relative;
+            height: 400px;
+            width: 100%;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Simulador del Modelo de Costos Avícola</h1>
+    <p class="subtitle">Caso de estudio: Eficiencia Económica en Pollo de Engorda (Cobb 500)</p>
+    
+    <div class="team-box">
+        <div class="team-title">Integrantes del Equipo</div>
+        <p><strong>• Christian Abraham Barrios Reyes</strong></p>
+        <p><strong>• Lona Luces Santiago</strong></p>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid #dcdde1; margin-bottom: 25px;">
+
+    <div class="grid-inputs">
+        <div class="form-group">
+            <label for="costoFijo">Costos Fijos ($ CF):</label>
+            <input type="number" id="costoFijo" value="5000" min="0">
+        </div>
+        <div class="form-group">
+            <label for="precioAlimento">Precio Alimento/Kg ($):</label>
+            <input type="number" id="precioAlimento" value="12" step="0.1" min="0">
+        </div>
+        <div class="form-group">
+            <label for="precioPollo">Precio Venta Pollo/Kg ($):</label>
+            <input type="number" id="precioPollo" value="38" step="0.1" min="0">
+        </div>
+        <button onclick="calcularSimulacion()">Simular y Graficar</button>
+    </div>
+
+    <div id="diagnostico" class="results-box" style="display:none;"></div>
+
+    <h2>Tabla de Costos de Production en Corto Plazo</h2>
+    <div class="table-responsive">
+        <table id="tablaCostos">
+            <thead>
+                <tr>
+                    <th>Prod (Q)</th>
+                    <th>CF ($)</th>
+                    <th>CV ($)</th>
+                    <th>CT ($)</th>
+                    <th>CFMe ($)</th>
+                    <th>CVMe ($)</th>
+                    <th>CTMe ($)</th>
+                    <th>CMg ($)</th>
+                    <th>IMg ($)</th>
+                    <th>Beneficio ($)</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <h2>Curvas de Costos Medios y Marginales</h2>
+    <div class="chart-container">
+        <canvas id="chartCostos"></canvas>
+    </div>
+</div>
+
+<script>
+// Datos base de producción simulada (Kg de carne producida en función del alimento consumido)
+const datosProduccion = [
+    { alimento: 0, q: 0 },
+    { alimento: 1000, q: 600 },
+    { alimento: 2000, q: 1400 },
+    { alimento: 3000, q: 2100 },
+    { alimento: 4000, q: 2600 },
+    { alimento: 5000, q: 2950 },
+    { alimento: 6000, q: 3200 },
+    { alimento: 7000, q: 3350 }
+];
+
+let chartInstance = null;
+
+function calcularSimulacion() {
+    const CF = parseFloat(document.getElementById('costoFijo').value);
+    const pxAlimento = parseFloat(document.getElementById('precioAlimento').value);
+    const IMg = parseFloat(document.getElementById('precioPollo').value); 
+
+    const tbody = document.querySelector('#tablaCostos tbody');
+    tbody.innerHTML = '';
+
+    let labelsX = [];
+    let dataCVMe = [];
+    let dataCTMe = [];
+    let dataCMg = [];
+    let dataIMg = [];
+
+    let optimoq = 0;
+    let maxBeneficio = -Infinity;
+    let minCVMe = Infinity;
+
+    let resultados = datosProduccion.map((nodo, idx) => {
+        let q = nodo.q;
+        let CV = nodo.alimento * pxAlimento;
+        let CT = CF + CV;
+        
+        let CFMe = q > 0 ? (CF / q) : 0;
+        let CVMe = q > 0 ? (CV / q) : 0;
+        let CTMe = q > 0 ? (CT / q) : 0;
+
+        let CMg = 0;
+        if (idx > 0) {
+            let deltaQ = q - datosProduccion[idx-1].q;
+            let deltaCV = CV - (datosProduccion[idx-1].alimento * pxAlimento);
+            CMg = deltaQ > 0 ? (deltaCV / deltaQ) : 0;
+        }
+
+        let ingresoTotal = q * IMg;
+        let beneficio = ingresoTotal - CT;
+
+        if (q > 0 && CVMe < minCVMe) {
+            minCVMe = CVMe;
+        }
+
+        return { q, CF, CV, CT, CFMe, CVMe, CTMe, CMg, IMg, beneficio };
+    });
+
+    resultados.forEach((r, idx) => {
+        let row = document.createElement('tr');
+        
+        if (r.q > 0 && r.beneficio > maxBeneficio && r.CMg <= r.IMg) {
+            maxBeneficio = r.beneficio;
+            optimoq = r.q;
+        }
+
+        row.innerHTML = `
+            <td>${r.q}</td>
+            <td>${r.CF.toFixed(2)}</td>
+            <td>${r.CV.toFixed(2)}</td>
+            <td>${r.CT.toFixed(2)}</td>
+            <td>${r.q > 0 ? r.CFMe.toFixed(2) : '-'}</td>
+            <td>${r.q > 0 ? r.CVMe.toFixed(2) : '-'}</td>
+            <td>${r.q > 0 ? r.CTMe.toFixed(2) : '-'}</td>
+            <td>${idx > 0 ? r.CMg.toFixed(2) : '-'}</td>
+            <td>${r.IMg.toFixed(2)}</td>
+            <td style="color: ${r.beneficio >= 0 ? 'green':'red'}">${r.beneficio.toFixed(2)}</td>
+        `;
+
+        tbody.appendChild(row);
+
+        if (idx > 0) {
+            labelsX.push(`Q: ${r.q}`);
+            dataCVMe.push(r.CVMe.toFixed(2));
+            dataCTMe.push(r.CTMe.toFixed(2));
+            dataCMg.push(r.CMg.toFixed(2));
+            dataIMg.push(r.IMg.toFixed(2));
+        }
+    });
+
+    Array.from(tbody.rows).forEach(row => {
+        let qVal = parseInt(row.cells[0].innerText);
+        if (qVal === optimoq && optimoq > 0) row.classList.add('highlight-optimo');
+    });
+
+    const diagnostico = document.getElementById('diagnostico');
+    diagnostico.style.display = 'block';
+    
+    if (IMg < minCVMe) {
+        diagnostico.innerHTML = `<strong>⚠️ DECISIÓN EMPRESARIAL (PUNTO DE CIERRE):</strong> El precio de venta ($${IMg}) está por debajo del CVMe mínimo ($${minCVMe.toFixed(2)}). <strong>La granja avícola debe CERRAR inmediatamente</strong> a corto plazo.`;
+        diagnostico.className = "results-box highlight-cierre";
+    } else {
+        diagnostico.innerHTML = `<strong>📈 DIAGNÓSTICO ECONÓMICO:</strong> El óptimo económico aproximado ocurre cerca de <strong>Q = ${optimoq} kg</strong>. En este punto se maximizan las ganancias netas estables frente al costo marginal de alimentación.`;
+        diagnostico.className = "results-box";
+    }
+
+    if (chartInstance) chartInstance.destroy();
+
+    const ctx = document.getElementById('chartCostos').getContext('2d');
+    chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labelsX,
+            datasets: [
+                { label: 'Costo Marginal (CMg)', data: dataCMg, borderColor: '#e74c3c', fill: false, tension: 0.1 },
+                { label: 'Costo Variable Medio (CVMe)', data: dataCVMe, borderColor: '#3498db', fill: false, tension: 0.1 },
+                { label: 'Costo Total Medio (CTMe)', data: dataCTMe, borderColor: '#f1c40f', fill: false, tension: 0.1 },
+                { label: 'Precio / Ingreso Marginal (IMg)', data: dataIMg, borderColor: '#2ecc71', borderDash: [5, 5], fill: false }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { title: { display: true, text: 'Valor Monetario ($)' } },
+                x: { title: { display: true, text: 'Nivel de Producción (Q en Kg)' } }
+            }
+        }
+    });
+}
+
+window.onload = calcularSimulacion;
+</script>
+</body>
+</html>
